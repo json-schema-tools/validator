@@ -1,5 +1,4 @@
-import validator from "./boolean";
-import ValidationError from "../validation-error";
+import validator, { BooleanValidationError } from "./boolean";
 
 describe("Boolean validation", () => {
   it("always returns true for boolean: true schema", () => {
@@ -9,8 +8,8 @@ describe("Boolean validation", () => {
   });
 
   it("always returns an error for boolean: false schema", () => {
-    expect(validator(false, "im a string")).toBeInstanceOf(ValidationError);
-    expect(validator(false, 123)).toBeInstanceOf(ValidationError);
-    expect(validator(false, {})).toBeInstanceOf(ValidationError);
+    expect(validator(false, "im a string")).toBeInstanceOf(BooleanValidationError);
+    expect(validator(false, 123)).toBeInstanceOf(BooleanValidationError);
+    expect(validator(false, {})).toBeInstanceOf(BooleanValidationError);
   });
 });

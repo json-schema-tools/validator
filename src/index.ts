@@ -1,14 +1,16 @@
 import { JSONSchema, JSONSchemaObject } from "@json-schema-tools/meta-schema";
 import traverse from "@json-schema-tools/traverse";
-import ValidationError from "./validation-error";
-import StringValidator from "./base-validators/string";
-import BooleanValidator from "./base-validators/boolean";
+import StringValidator, { StringValidationError } from "./base-validators/string";
+import BooleanValidator, { BooleanValidationError } from "./base-validators/boolean";
+
+// import all the different validation errors
+type ValidationError = StringValidationError | BooleanValidationError;
 
 export class ValidationErrors implements Error {
   public name = "ValidationErrors";
   public message: string;
 
-  constructor(errors: ValidationError[]) {
+  constructor(public errors: ValidationError[]) {
     this.message = "";
   }
 }
