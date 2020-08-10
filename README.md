@@ -38,9 +38,8 @@ const mySchema = {
   }
 };
 
-const bazValidator = new Validator(mySchema);
+const isValid = validator(mySchema, { foo: ["hello", "world" ], bar: 1 });
 
-const isValid = bazValidator({ foo: ["hello", "world" ], bar: 1 });
 
 if (isValid instanceof ValidatorErrors) {
     console.error(isValid);
