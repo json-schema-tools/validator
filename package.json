@@ -1,14 +1,14 @@
 {
-  "name": "@json-schema-tools/traverse",
+  "name": "@json-schema-tools/validator",
   "version": "0.0.0-development",
-  "description": "This package exports a method that will traverse a JSON-Schema, calling a mutation function for each sub schema found. It is useful for building tools to work with JSON Schemas.",
+  "description": "JSON Schema validator. Simple, fast, handles circular references.",
   "main": "build/index.js",
   "bugs": {
-    "url": "https://github.com/json-schema-tools/traverse/issues"
+    "url": "https://github.com/json-schema-tools/validator/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/json-schema-tools/traverse.git"
+    "url": "git+https://github.com/json-schema-tools/validator.git"
   },
   "homepage": "json-schema.tools",
   "publishConfig": {
@@ -34,5 +34,8 @@
     "ts-jest": "^24.3.0",
     "typedoc": "^0.17.7",
     "typescript": "^3.9.5"
+  },
+  "dependencies": {
+    "@json-schema-tools/traverse": "^1.5.0"
   }
 }
