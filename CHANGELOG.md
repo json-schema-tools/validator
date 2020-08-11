@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/json-schema-tools/validator/compare/1.0.0...1.1.0) (2020-08-11)
+
+
+### Features
+
+* add integer validation ([4666b8f](https://github.com/json-schema-tools/validator/commit/4666b8f98eb2d0aa232e7f11101d92a2d30b63ce)), closes [#1](https://github.com/json-schema-tools/validator/issues/1)
+
 # 1.0.0 (2020-08-11)
 
 
