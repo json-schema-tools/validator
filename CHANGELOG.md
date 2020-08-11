@@ -1,3 +1,18 @@
+# 1.0.0 (2020-08-11)
+
+
+### Bug Fixes
+
+* make tests pass ([de79186](https://github.com/json-schema-tools/validator/commit/de79186e3a252dcebed05f0951be325486f77326))
+* update readme a little ([985ce5b](https://github.com/json-schema-tools/validator/commit/985ce5b2028f2db86caa6887c59cc840ac43e6fe))
+
+
+### Features
+
+* first commit ([69fbd59](https://github.com/json-schema-tools/validator/commit/69fbd599a86354ad09a1bdd8c585404849816990))
+* get things layed out a little bit ([7811c14](https://github.com/json-schema-tools/validator/commit/7811c140b0a951a5fdaead65205999f7895c5dda))
+* implement v1 of string support ([ee1c229](https://github.com/json-schema-tools/validator/commit/ee1c2295916c81a3b29e6d8bb82c2cec699882b3))
+
 ## [1.4.2](https://github.com/json-schema-tools/traverse/compare/1.4.1...1.4.2) (2020-07-21)
 
 
