@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ValidationErrors | @json-schema-tools/traverse</title>
+	<title>IntegerValidationError | @json-schema-tools/traverse</title>
 	<meta name="description" content="Documentation for @json-schema-tools/traverse">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="validationerrors.html">ValidationErrors</a>
+					<a href="integervalidationerror.html">IntegerValidationError</a>
 				</li>
 			</ul>
-			<h1>Class ValidationErrors</h1>
+			<h1>Class IntegerValidationError</h1>
 		</div>
 	</div>
 </header>
@@ -70,7 +70,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">ValidationErrors</span>
+						<span class="target">IntegerValidationError</span>
 					</li>
 				</ul>
 			</section>
@@ -87,15 +87,14 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="validationerrors.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="integervalidationerror.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="validationerrors.html#errors" class="tsd-kind-icon">errors</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="validationerrors.html#message" class="tsd-kind-icon">message</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="validationerrors.html#name" class="tsd-kind-icon">name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="integervalidationerror.html#message" class="tsd-kind-icon">message</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="integervalidationerror.html#name" class="tsd-kind-icon">name</a></li>
 							</ul>
 						</section>
 					</div>
@@ -107,22 +106,28 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Validation<wbr>Errors<span class="tsd-signature-symbol">(</span>errors<span class="tsd-signature-symbol">: </span><a href="validationerror.html" class="tsd-signature-type">ValidationError</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="validationerrors.html" class="tsd-signature-type">ValidationErrors</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Integer<wbr>Validation<wbr>Error<span class="tsd-signature-symbol">(</span>schema<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">JSONSchemaObject</span>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, reason<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="integervalidationerror.html" class="tsd-signature-type">IntegerValidationError</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/json-schema-tools/validator/blob/1acc56c/src/index.ts#L12">index.ts:12</a></li>
+									<li>Defined in <a href="https://github.com/json-schema-tools/validator/blob/1acc56c/src/base-validators/integer.ts#L6">base-validators/integer.ts:6</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>errors: <a href="validationerror.html" class="tsd-signature-type">ValidationError</a><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>schema: <span class="tsd-signature-type">JSONSchemaObject</span></h5>
+								</li>
+								<li>
+									<h5>data: <span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li>
+									<h5>reason: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="validationerrors.html" class="tsd-signature-type">ValidationErrors</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="integervalidationerror.html" class="tsd-signature-type">IntegerValidationError</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -130,32 +135,22 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="errors" class="tsd-anchor"></a>
-					<h3>errors</h3>
-					<div class="tsd-signature tsd-kind-icon">errors<span class="tsd-signature-symbol">:</span> <a href="validationerror.html" class="tsd-signature-type">ValidationError</a><span class="tsd-signature-symbol">[]</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/json-schema-tools/validator/blob/1acc56c/src/index.ts#L14">index.ts:14</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="message" class="tsd-anchor"></a>
 					<h3>message</h3>
 					<div class="tsd-signature tsd-kind-icon">message<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/json-schema-tools/validator/blob/1acc56c/src/index.ts#L12">index.ts:12</a></li>
+							<li>Defined in <a href="https://github.com/json-schema-tools/validator/blob/1acc56c/src/base-validators/integer.ts#L6">base-validators/integer.ts:6</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="name" class="tsd-anchor"></a>
 					<h3>name</h3>
-					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;ValidationErrors&quot;</span></div>
+					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;IntegerValidationError&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/json-schema-tools/validator/blob/1acc56c/src/index.ts#L11">index.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/json-schema-tools/validator/blob/1acc56c/src/base-validators/integer.ts#L5">base-validators/integer.ts:5</a></li>
 						</ul>
 					</aside>
 				</section>
