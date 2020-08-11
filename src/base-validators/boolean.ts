@@ -2,7 +2,7 @@ import ValidationError from "../validation-error";
 import { JSONSchemaBoolean } from "@json-schema-tools/meta-schema";
 
 export class BooleanValidationError implements Error {
-  public name = "StringValidationError";
+  public name = "BooleanValidationError";
   public message: string;
 
   constructor() {
