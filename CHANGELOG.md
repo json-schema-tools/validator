@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/json-schema-tools/validator/compare/1.1.0...1.1.1) (2020-08-12)
+
+
+### Bug Fixes
+
+* add float support ([4a7c1c4](https://github.com/json-schema-tools/validator/commit/4a7c1c42ee9cc6daf61032b769a0dfa18d8c7693)), closes [#5](https://github.com/json-schema-tools/validator/issues/5)
+
 # [1.1.0](https://github.com/json-schema-tools/validator/compare/1.0.0...1.1.0) (2020-08-11)
 
 
