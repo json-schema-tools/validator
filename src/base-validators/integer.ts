@@ -1,5 +1,6 @@
 import ValidationError from "../validation-error";
 import { JSONSchemaObject } from "@json-schema-tools/meta-schema";
+import NumberValidator, { NumberValidationError } from "./number";
 
 export class IntegerValidationError implements Error {
   public name = "IntegerValidationError";
@@ -21,62 +22,14 @@ const isInt = (num: number) => {
 }
 
 export default (schema: JSONSchemaObject, d: any): true | ValidationError => {
-  if (typeof d !== "number") {
-    return new IntegerValidationError(schema, d, "Not a number type");
+
+  const validNumber  = NumberValidator(schema, d);
+  if (validNumber !== true) {
+    return validNumber;
   }
 
   if (!isInt(d)) {
     return new IntegerValidationError(schema, d, "provided number is a float, not an integer");
-  }
-
-  if (schema.multipleOf) {
-    if (!isInt(d / schema.multipleOf)) {
-      return new IntegerValidationError(schema, d, `number is not a multiple of ${schema.multipleOf}`);
-    }
-  }
-
-  if (schema.maximum) {
-    if (d > schema.maximum) {
-      return new IntegerValidationError(schema, d, `number exceeds maximum of ${schema.maximum}`);
-    }
-  }
-
-  if (schema.exclusiveMaximum) {
-    if (d >= schema.exclusiveMaximum) {
-      return new IntegerValidationError(
-        schema,
-        d,
-        `number is greater than or equal to exclusive maximum of ${schema.exclusiveMaximum}`
-      );
-    }
-  }
-
-  if (schema.minimum) {
-    if (d < schema.minimum) {
-      return new IntegerValidationError(schema, d, `number is less than minimum of ${schema.minimum}`);
-    }
-  }
-
-  if (schema.exclusiveMinimum) {
-    if (d <= schema.exclusiveMinimum) {
-      return new IntegerValidationError(
-        schema,
-        d,
-        `number is less than or equal to exclusive minimum of ${schema.exclusiveMinimum}`
-      );
-    }
-  }
-
-  if (schema.const) {
-    if (d !== schema.const) {
-      return new IntegerValidationError(schema, d, `must be: ${schema.const}`);
-    }
-  }
-
-  if (schema.enum) {
-    if (schema.enum.indexOf(d) === -1) {
-      return new IntegerValidationError(schema, d, `must be one of: ${schema.enum}`);
-    }
   }
 
   return true;
