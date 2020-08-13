@@ -1,16 +1,17 @@
-import { JSONSchema, JSONSchemaObject } from "@json-schema-tools/meta-schema";
-import traverse from "@json-schema-tools/traverse";
+import { JSONSchema } from "@json-schema-tools/meta-schema";
 import StringValidator, { StringValidationError } from "./base-validators/string";
 import BooleanValidator, { BooleanValidationError } from "./base-validators/boolean";
 import NumberValidator, { NumberValidationError } from "./base-validators/number";
 import IntegerValidator, { IntegerValidationError } from "./base-validators/integer";
+import ObjectValidator, { ObjectValidationError } from "./base-validators/object";
 
 // import all the different validation errors
 type ValidationError =
   StringValidationError |
   BooleanValidationError |
   IntegerValidationError |
-  NumberValidationError;
+  NumberValidationError |
+  ObjectValidationError;
 
 export class ValidationErrors implements Error {
   public name = "ValidationErrors";
@@ -50,6 +51,11 @@ const validator = (schema: JSONSchema, data: any): true | ValidationErrors => {
     }
   } else if (schema.type === "number") {
     const valid = NumberValidator(schema, data);
+    if (valid !== true) {
+      errors.push(valid);
+    }
+  } else if (schema.type === "object") {
+    const valid = ObjectValidator(schema, data);
     if (valid !== true) {
       errors.push(valid);
     }
