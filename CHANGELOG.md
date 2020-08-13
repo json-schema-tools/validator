@@ -1,3 +1,15 @@
+# [1.2.0](https://github.com/json-schema-tools/validator/compare/1.1.1...1.2.0) (2020-08-13)
+
+
+### Bug Fixes
+
+* comment out tests that dont have impl yet ([b4e936c](https://github.com/json-schema-tools/validator/commit/b4e936c48bf6451e0e27e81918a30564244001ac))
+
+
+### Features
+
+* add object validation functionality without subschema checking ([aad19e8](https://github.com/json-schema-tools/validator/commit/aad19e8f553a97950be473b6b4ef110748d31503))
+
 ## [1.1.1](https://github.com/json-schema-tools/validator/compare/1.1.0...1.1.1) (2020-08-12)
 
 
