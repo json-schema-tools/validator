@@ -1,3 +1,4 @@
+import { JSONSchemaObject } from "@json-schema-tools/meta-schema";
 import validator, { ObjectValidationError } from "./object";
 
 describe("validator", () => {
@@ -23,7 +24,7 @@ describe("validator", () => {
         bar: { type: "integer" },
         baz: { type: "integer" }
       }
-    };
+    } as JSONSchemaObject;
 
     expect(validator(testSchema, { foo: 123, bar: 123, baz: 123 })).toBe(true);
     expect(validator(testSchema, { bar: 123, baz: 123 })).toBe(true);
@@ -32,7 +33,13 @@ describe("validator", () => {
   });
 
   it("handles required properties", () => {
-    const testSchema = { type: "object", required: ["foo"], properties: { foo: { type: "integer" } } };
+    const testSchema = {
+      type: "object",
+      required: ["foo"],
+      properties: {
+        foo: { type: "integer" }
+      }
+    } as JSONSchemaObject;
     expect(validator(testSchema, { foo: 123 })).toBe(true);
     expect(validator(testSchema, { foo: 123, bar: 123 })).toBe(true);
     expect(validator(testSchema, {})).toBeInstanceOf(ObjectValidationError);
@@ -41,7 +48,11 @@ describe("validator", () => {
   });
 
   it("handles min and maxProperties", () => {
-    const testSchema0 = { type: "object", maxProperties: 3, minProperties: 1 };
+    const testSchema0 = {
+      type: "object",
+      maxProperties: 3,
+      minProperties: 1
+    } as JSONSchemaObject;
     expect(validator(testSchema0, { foo: 123 })).toBe(true);
     expect(validator(testSchema0, { foo: 123, bar: 123, baz: 123 })).toBe(true);
     expect(validator(testSchema0, { foo: 123, bar: 123, baz: 123, boom: 123 })).toBeInstanceOf(ObjectValidationError);
