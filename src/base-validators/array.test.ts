@@ -1,6 +1,6 @@
 import validator, { ObjectValidationError } from "./object";
 
-describe("object", () => {
+describe("array", () => {
   it("handles the basics", () => {
     expect(validator({ type: "object" }, {})).toBe(true);
     expect(validator({ type: "object" }, { foo: "123" })).toBe(true);
@@ -14,18 +14,17 @@ describe("object", () => {
     expect(validator({ type: "object" }, new Foo())).toBeInstanceOf(ObjectValidationError);
   });
 
-  it("dependentRequired", () => {
+  it("ordered arrays", () => {
     const testSchema = {
-      type: "object",
-      dependentRequired: { foo: ["bar", "baz"] },
-      properties: {
-        foo: { type: "integer" },
-        bar: { type: "integer" },
-        baz: { type: "integer" }
-      }
+      type: "array",
+      items: [
+        { type: "integer" },
+        { type: "string" },
+        { type: "number" }
+      ]
     };
 
-    expect(validator(testSchema, { foo: 123, bar: 123, baz: 123 })).toBe(true);
+    expect(validator(testSchema, { foo: 123, bar: "123", baz: 123 })).toBe(true);
     expect(validator(testSchema, { bar: 123, baz: 123 })).toBe(true);
     expect(validator(testSchema, { foo: 123 })).toBeInstanceOf(ObjectValidationError);
     expect(validator(testSchema, { foo: 123, bar: 123 })).toBeInstanceOf(ObjectValidationError);

@@ -6,7 +6,7 @@ import IntegerValidator, { IntegerValidationError } from "./base-validators/inte
 import ObjectValidator, { ObjectValidationError } from "./base-validators/object";
 
 // import all the different validation errors
-type ValidationError =
+export type ValidationError =
   StringValidationError |
   BooleanValidationError |
   IntegerValidationError |
@@ -18,7 +18,7 @@ export class ValidationErrors implements Error {
   public message: string;
 
   constructor(public errors: ValidationError[]) {
-    this.message = "";
+    this.message = errors.map((err) => err.message).join("\n");
   }
 }
 

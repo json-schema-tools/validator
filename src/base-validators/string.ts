@@ -6,7 +6,9 @@ export class StringValidationError implements Error {
 
   constructor(schema: JSONSchemaObject, data: any, reason: string) {
     this.message = [
-      "invalid data provided is not a valid string",
+      "Invalid string",
+      `provided: ${data}`,
+      `expected schema: ${JSON.stringify(schema)}`,
       `reason: ${reason}`,
     ].join("\n");
   }
@@ -19,13 +21,13 @@ export default (schema: JSONSchemaObject, d: any): true | StringValidationError 
 
   if (schema.maxLength) {
     if (d.length > schema.maxLength) {
-      return new StringValidationError(schema, d, `cannot be longer than maxLength: ${schema.maxLength}`);
+      return new StringValidationError(schema, d, `cannot be longer than ${schema.maxLength} characters. Received ${d.length}`);
     }
   }
 
   if (schema.minLength) {
-    if (d.length <= schema.minLength) {
-      return new StringValidationError(schema, d, `cannot be shorter than minLength: ${schema.minLength}`);
+    if (d.length < schema.minLength) {
+      return new StringValidationError(schema, d, `cannot be shorter than ${schema.minLength}. Received ${d.length}.`);
     }
   }
 

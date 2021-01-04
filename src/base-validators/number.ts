@@ -1,4 +1,3 @@
-import ValidationError from "../validation-error";
 import { JSONSchemaObject } from "@json-schema-tools/meta-schema";
 
 export class NumberValidationError implements Error {
@@ -12,9 +11,9 @@ export class NumberValidationError implements Error {
     ].join("\n");
   }
 }
-export default (schema: JSONSchemaObject, d: any): true | ValidationError => {
+export default (schema: JSONSchemaObject, d: any): true | NumberValidationError => {
   if (typeof d !== "number") {
-    return new NumberValidationError(schema, d, "Not a number type");
+    return new NumberValidationError(schema, d, `Not a number type. Received type ${typeof d}`);
   }
 
   if (schema.multipleOf) {

@@ -1,4 +1,6 @@
-import { JSONSchemaObject } from "@json-schema-tools/meta-schema";
+import { JSONSchemaObject, Properties, JSONSchema } from "@json-schema-tools/meta-schema";
+import StringValidator, { StringValidationError } from "./string";
+import validator, { ValidationError, ValidationErrors } from "../";
 
 export class ObjectValidationError implements Error {
   public name = "StringValidationError";
@@ -40,7 +42,7 @@ export default (schema: JSONSchemaObject, d: any): true | ObjectValidationError 
 
   if (schema.maxProperties !== undefined) {
     if (dKeys.length > schema.maxProperties) {
-      return new ObjectValidationError(schema, d, `too many properties. maxProperties is ${schema.maxProperties}`)
+      return new ObjectValidationError(schema, d, `maxProperties is ${schema.maxProperties}, provided ${dKeys.length}`)
     }
   }
 
@@ -78,7 +80,66 @@ export default (schema: JSONSchemaObject, d: any): true | ObjectValidationError 
     }
   }
 
-  // warn if any of the keys are non-strings
+  if (schema.propertyNames && schema.propertyNames !== true) {
+    const propNameErrors = Object
+      .keys(d)
+      .reduce((errs, name) => {
+        const err = StringValidator((schema.propertyNames as JSONSchemaObject), name);
+
+        if (err instanceof StringValidationError) {
+          errs.push(err);
+        }
+
+        return errs;
+      }, [] as StringValidationError[]);
+
+    if (propNameErrors.length > 0) {
+      return new ObjectValidationError(
+        schema,
+        d,
+        [
+          "Invalid property name:",
+          propNameErrors.map((e) => e.message).join("\n")
+        ].join("\n")
+      );
+    }
+  }
+
+  const additionalProps = [] as any;
+
+  if (schema.properties) {
+    const props = schema.properties as Properties;
+
+    const propertyErrors = Object.entries(d).reduce((errs, [key, val]) => {
+      const schemaForKey = props[key];
+      if (schemaForKey === undefined) {
+        additionalProps.push(val);
+        return [];
+      }
+      const vErr = validator(schemaForKey, val);
+      if (vErr instanceof ValidationErrors) {
+        errs.push(vErr);
+      }
+      return errs;
+    }, [] as any);
+
+    if (propertyErrors.length > 0) {
+      return new ObjectValidationError(schema, d, [
+        "Invalid property:",
+        propertyErrors.map((e: any) => e.message).join("\n")
+      ].join("\n"));
+    }
+  }
+
+  if (additionalProps.length > 0) {
+    additionalProps.reduce((errs: any, addProp: any) => {
+      const vErr = validator(schema.additionalProperties || true as JSONSchema, addProp);
+      if (vErr instanceof ValidationErrors) {
+        errs.push(vErr);
+      }
+      return errs;
+    }, [] as any);
+  }
 
   return true;
 }
