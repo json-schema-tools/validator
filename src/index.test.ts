@@ -1,7 +1,8 @@
-import validator, { ValidationErrors } from "./";
+import validator from "./";
 import { JSONSchema } from "@json-schema-tools/meta-schema";
 import { ObjectValidationError } from "./base-validators/object";
 import { NumberValidationError } from "./base-validators/number";
+import { ValidationErrors } from "./validation-error";
 
 describe("validator", () => {
   it("is a function", () => { expect(typeof validator).toBe("function"); });
