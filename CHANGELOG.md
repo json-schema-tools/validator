@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/json-schema-tools/validator/compare/1.3.0...1.4.0) (2022-10-05)
+
+
+### Features
+
+* add array validation ([b7feb21](https://github.com/json-schema-tools/validator/commit/b7feb21785e2c5dfcb61a2564516ed379df3916b))
+
 # [1.3.0](https://github.com/json-schema-tools/validator/compare/1.2.0...1.3.0) (2022-10-05)
 
 
