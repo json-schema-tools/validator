@@ -1,3 +1,17 @@
+# [1.3.0](https://github.com/json-schema-tools/validator/compare/1.2.0...1.3.0) (2022-10-05)
+
+
+### Bug Fixes
+
+* bad typedoc config ([11d14d9](https://github.com/json-schema-tools/validator/commit/11d14d96058f7f0df30313568e5c56ac9789a2c5))
+* update readme and fixup name on typedoc ([66b5f48](https://github.com/json-schema-tools/validator/commit/66b5f48c2cb3f4375111b797ea3a82d84b82208f))
+* use new circle node images ([b3a1065](https://github.com/json-schema-tools/validator/commit/b3a10655937159c9d17e19ac003e8157e6fdf41b))
+
+
+### Features
+
+* nesting ([317af71](https://github.com/json-schema-tools/validator/commit/317af71834bd8da81419ed15977d690ee265840b))
+
 # [1.2.0](https://github.com/json-schema-tools/validator/compare/1.1.1...1.2.0) (2020-08-13)
 
 
