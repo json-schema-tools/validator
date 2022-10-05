@@ -1,7 +1,6 @@
 {
-  "name": "@json-schema-tools/traverse",
-  "mode": "file",
-  "inputFiles": [
+  "name": "@json-schema-tools/validator",
+  "entryPoints": [
     "./src/index.ts"
   ],
   "out": "docs",
@@ -12,8 +11,5 @@
     "build",
     "jest.config.js",
     "src/*.test.ts"
-  ],
-  "toc": [
-    "traverse"
   ]
 }

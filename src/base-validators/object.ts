@@ -1,7 +1,7 @@
 import { JSONSchemaObject } from "@json-schema-tools/meta-schema";
 
 export class ObjectValidationError implements Error {
-  public name = "StringValidationError";
+  public name = "ObjectValidationError";
   public message: string;
 
   constructor(schema: JSONSchemaObject, data: any, reason: string) {
