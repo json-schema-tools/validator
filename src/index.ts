@@ -4,9 +4,10 @@ import BooleanValidator, { BooleanValidationError } from "./base-validators/bool
 import NumberValidator, { NumberValidationError } from "./base-validators/number";
 import IntegerValidator, { IntegerValidationError } from "./base-validators/integer";
 import ObjectValidator, { ObjectValidationError } from "./base-validators/object";
+import ArrayValidator, { ArrayValidationError } from "./base-validators/array";
+
 import traverse from "@json-schema-tools/traverse";
 import jsonpath from "jsonpath";
-
 
 // import all the different validation errors
 type ValidationError =
@@ -14,7 +15,8 @@ type ValidationError =
   BooleanValidationError |
   IntegerValidationError |
   NumberValidationError |
-  ObjectValidationError;
+  ObjectValidationError |
+  ArrayValidationError;
 
 export class ValidationErrors implements Error {
   public name = "ValidationErrors";
@@ -50,6 +52,11 @@ const validateItem = (schema: JSONSchema, data: any): true | ValidationError[] =
     }
   } else if (schema.type === "object") {
     const valid = ObjectValidator(schema, data);
+    if (valid !== true) {
+      errors.push(valid);
+    }
+  } else if (schema.type === "array") {
+    const valid = ArrayValidator(schema, data);
     if (valid !== true) {
       errors.push(valid);
     }
