@@ -1,7 +1,6 @@
 {
   "name": "@json-schema-tools/validator",
-  "mode": "file",
-  "inputFiles": [
+  "entryPoints": [
     "./src/index.ts"
   ],
   "out": "docs",
