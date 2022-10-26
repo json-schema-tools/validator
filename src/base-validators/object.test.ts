@@ -1,18 +1,23 @@
 import { JSONSchemaObject } from "@json-schema-tools/meta-schema";
-import validator, { ObjectValidationError } from "./object";
+import validator, { ObjectValidationError, ObjectValidationErrorBadType, ObjectValidationErrorDependentRequired, ObjectValidationErrorMaxProperties, ObjectValidationErrorMinProperties, ObjectValidationErrorRequired } from "./object";
 
 describe("validator", () => {
+  it("general ObjectValidationError", () => {
+    expect(validator({ type: "object" }, "123"))
+      .toBeInstanceOf(ObjectValidationError);
+  });
+
   it("handles the basics", () => {
     expect(validator({ type: "object" }, {})).toBe(true);
     expect(validator({ type: "object" }, { foo: "123" })).toBe(true);
 
-    expect(validator({ type: "object" }, undefined)).toBeInstanceOf(ObjectValidationError);
-    expect(validator({ type: "object" }, null)).toBeInstanceOf(ObjectValidationError);
-    expect(validator({ type: "object" }, 123)).toBeInstanceOf(ObjectValidationError);
-    expect(validator({ type: "object" }, [])).toBeInstanceOf(ObjectValidationError);
+    expect(validator({ type: "object" }, undefined)).toBeInstanceOf(ObjectValidationErrorBadType);
+    expect(validator({ type: "object" }, null)).toBeInstanceOf(ObjectValidationErrorBadType);
+    expect(validator({ type: "object" }, 123)).toBeInstanceOf(ObjectValidationErrorBadType);
+    expect(validator({ type: "object" }, [])).toBeInstanceOf(ObjectValidationErrorBadType);
     class Foo { }
-    expect(validator({ type: "object" }, Foo)).toBeInstanceOf(ObjectValidationError);
-    expect(validator({ type: "object" }, new Foo())).toBeInstanceOf(ObjectValidationError);
+    expect(validator({ type: "object" }, Foo)).toBeInstanceOf(ObjectValidationErrorBadType);
+    expect(validator({ type: "object" }, new Foo())).toBeInstanceOf(ObjectValidationErrorBadType);
   });
 
   it("dependentRequired", () => {
@@ -28,8 +33,8 @@ describe("validator", () => {
 
     expect(validator(testSchema, { foo: 123, bar: 123, baz: 123 })).toBe(true);
     expect(validator(testSchema, { bar: 123, baz: 123 })).toBe(true);
-    expect(validator(testSchema, { foo: 123 })).toBeInstanceOf(ObjectValidationError);
-    expect(validator(testSchema, { foo: 123, bar: 123 })).toBeInstanceOf(ObjectValidationError);
+    expect(validator(testSchema, { foo: 123 })).toBeInstanceOf(ObjectValidationErrorDependentRequired);
+    expect(validator(testSchema, { foo: 123, bar: 123 })).toBeInstanceOf(ObjectValidationErrorDependentRequired);
   });
 
   it("handles required properties", () => {
@@ -42,9 +47,9 @@ describe("validator", () => {
     } as JSONSchemaObject;
     expect(validator(testSchema, { foo: 123 })).toBe(true);
     expect(validator(testSchema, { foo: 123, bar: 123 })).toBe(true);
-    expect(validator(testSchema, {})).toBeInstanceOf(ObjectValidationError);
-    expect(validator(testSchema, { bar: 123 })).toBeInstanceOf(ObjectValidationError);
-    expect(validator(testSchema, { bar: 123 })).toBeInstanceOf(ObjectValidationError);
+    expect(validator(testSchema, {})).toBeInstanceOf(ObjectValidationErrorRequired);
+    expect(validator(testSchema, { bar: 123 })).toBeInstanceOf(ObjectValidationErrorRequired);
+    expect(validator(testSchema, { bar: 123 })).toBeInstanceOf(ObjectValidationErrorRequired);
   });
 
   it("handles min and maxProperties", () => {
@@ -55,8 +60,8 @@ describe("validator", () => {
     } as JSONSchemaObject;
     expect(validator(testSchema0, { foo: 123 })).toBe(true);
     expect(validator(testSchema0, { foo: 123, bar: 123, baz: 123 })).toBe(true);
-    expect(validator(testSchema0, { foo: 123, bar: 123, baz: 123, boom: 123 })).toBeInstanceOf(ObjectValidationError);
-    expect(validator(testSchema0, {})).toBeInstanceOf(ObjectValidationError);
+    expect(validator(testSchema0, { foo: 123, bar: 123, baz: 123, boom: 123 })).toBeInstanceOf(ObjectValidationErrorMaxProperties);
+    expect(validator(testSchema0, {})).toBeInstanceOf(ObjectValidationErrorMinProperties);
   });
 
   // it("handles propertyNames", () => {// will fail until decide on subschema validation pattern

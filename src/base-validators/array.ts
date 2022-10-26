@@ -1,14 +1,14 @@
 import { JSONSchemaObject } from "@json-schema-tools/meta-schema";
 
-export class ArrayValidationError implements Error {
+export class ArrayValidationError extends ValidationError {
   public name = "ArrayValidationError";
-  public message: string;
 
-  constructor(schema: JSONSchemaObject, data: any, reason: string) {
-    this.message = [
-      "invalid data provided is not a valid Array",
-      `reason: ${reason}`,
-    ].join("\n");
+  constructor(schema: JSONSchemaObject, data: any, public message: string) {
+    const msg = [
+      "Invalid array value",
+      message,
+    ];
+    super(schema, data, msg.join("\n"));
   }
 }
 

@@ -2,15 +2,27 @@ import ValidationError from "../validation-error";
 import { JSONSchemaObject } from "@json-schema-tools/meta-schema";
 import NumberValidator, { NumberValidationError } from "./number";
 
-export class IntegerValidationError implements Error {
+export class IntegerValidationError extends ValidationError {
   public name = "IntegerValidationError";
-  public message: string;
 
-  constructor(schema: JSONSchemaObject, data: any, reason: string) {
-    this.message = [
-      "invalid data provided is not a valid integer",
-      `reason: ${reason}`,
-    ].join("\n");
+  constructor(schema: JSONSchemaObject, data: any, message: string) {
+    const msg = [
+      "Invalid integer value",
+      message,
+    ];
+
+    super(schema, data, msg.join("\n"));
+  }
+}
+
+export class IntegerValidationErrorBadType extends IntegerValidationError {
+  public name = "IntegerValidationErrorBadType";
+
+  constructor(schema: JSONSchemaObject, data: number) {
+    super(schema, data, [
+      "Value must be an integer",
+      `Received value has a decimal component: ${data - Math.floor(data)}`,
+    ].join('\n'));
   }
 }
 
@@ -23,13 +35,13 @@ const isInt = (num: number) => {
 
 export default (schema: JSONSchemaObject, d: any): true | ValidationError => {
 
-  const validNumber  = NumberValidator(schema, d);
+  const validNumber = NumberValidator(schema, d);
   if (validNumber !== true) {
     return validNumber;
   }
 
   if (!isInt(d)) {
-    return new IntegerValidationError(schema, d, "provided number is a float, not an integer");
+    return new IntegerValidationErrorBadType(schema, d);
   }
 
   return true;

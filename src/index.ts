@@ -1,36 +1,20 @@
 import { JSONSchema, JSONSchemaObject } from "@json-schema-tools/meta-schema";
-import StringValidator, { StringValidationError } from "./base-validators/string";
-import BooleanValidator, { BooleanValidationError } from "./base-validators/boolean";
-import NumberValidator, { NumberValidationError } from "./base-validators/number";
-import IntegerValidator, { IntegerValidationError } from "./base-validators/integer";
-import ObjectValidator, { ObjectValidationError } from "./base-validators/object";
-import ArrayValidator, { ArrayValidationError } from "./base-validators/array";
-
+import StringValidator from "./base-validators/string";
+import BooleanValidator from "./base-validators/boolean";
+import NumberValidator from "./base-validators/number";
+import IntegerValidator from "./base-validators/integer";
+import ObjectValidator from "./base-validators/object";
+import ValidationError, { tValidationError, ValidationErrors } from "./validation-error";
 import traverse from "@json-schema-tools/traverse";
 import jsonpath from "jsonpath";
 
-// import all the different validation errors
-type ValidationError =
-  StringValidationError |
-  BooleanValidationError |
-  IntegerValidationError |
-  NumberValidationError |
-  ObjectValidationError |
-  ArrayValidationError;
-
-export class ValidationErrors implements Error {
-  public name = "ValidationErrors";
-  public message: string;
-
-  constructor(public errors: ValidationError[]) {
-    this.message = "";
-  }
-}
-
-const validateItem = (schema: JSONSchema, data: any): true | ValidationError[] => {
+const validateItem = (schema: JSONSchema, data: any): true | tValidationError[] => {
   const errors: ValidationError[] = [];
 
   if (typeof schema === "boolean") {
+    if (schema === false) {
+      errors.push(new ValidationError(schema, data, "Boolean schema 'false' is always invalid"));
+    }
     const valid = BooleanValidator(schema, data);
     if (valid !== true) {
       errors.push(valid);
@@ -69,6 +53,46 @@ const validateItem = (schema: JSONSchema, data: any): true | ValidationError[] =
   return errors;
 };
 
+// $.properties.foo -> $.foo
+// $.items[0].properties.foo -> $[0].foo
+// $.properties.foo.items[0].properties.bar -> $.foo[0].bar
+const schemaPathToRegularPath = (path: string) => {
+  const tokens = path.split(".");
+  const regularPath: string[] = [];
+
+  let pushNext = false;
+  tokens.forEach((t, i) => {
+    if (pushNext) {
+      regularPath[regularPath.length - 1] += `['${t}']`;
+      pushNext = false;
+      return;
+    }
+
+    if (t === "$") {
+      return regularPath.push(t);
+    }
+
+    if (t.startsWith("items")) {
+      const l = regularPath.length - 1;
+      let toAppend = "";
+      if (t.includes("[") && t.includes("]")) {
+        toAppend = t.replace("items", "");
+      } else {
+        toAppend = "[*]";
+      }
+
+      regularPath[l] += toAppend
+      return;
+    }
+
+    if (t === "properties") {
+      pushNext = true;
+      return;
+    }
+  });
+  return regularPath.join(".");
+};
+
 /**
  * A validator is a function is passed a schema and some data to validate against the it.
  * Errors if your schema contains $refs. Use the json-schema-tools/dereferencer beforehand.
@@ -79,51 +103,14 @@ const validateItem = (schema: JSONSchema, data: any): true | ValidationError[] =
  *
  */
 const validator = (schema: JSONSchema, data: any): true | ValidationErrors => {
-  // $.properties.foo -> $.foo
-  // $.items[0].properties.foo -> $[0].foo
-  // $.properties.foo.items[0].properties.bar -> $.foo[0].bar
-  const schemaPathToRegularPath = (path: string) => {
-    const tokens = path.split(".");
-    const regularPath: string[] = [];
-
-    let pushNext = false;
-    tokens.forEach((t, i) => {
-      if (pushNext) {
-        regularPath.push(t);
-        pushNext = false;
-        return;
-      }
-
-      if (t === "$") {
-        return regularPath.push(t);
-      }
-
-      if (t.startsWith("items")) {
-        const l = regularPath.length - 1;
-        let toAppend = "";
-        if (t.includes("[") && t.includes("]")) {
-          toAppend = t.replace("items", "");
-        } else {
-          toAppend = "[*]";
-        }
-
-        regularPath[l] += toAppend
-        return;
-      }
-
-      if (t === "properties") {
-        pushNext = true;
-        return;
-      }
-    });
-    return regularPath.join(".");
-  };
 
   let errors: ValidationError[] = [];
+  let errorMap: { [path: string]: ValidationError[] } = {};
 
   traverse(schema, (ss, isCycle, path, parent: JSONSchema) => {
     const regularPath = schemaPathToRegularPath(path);
     const [reffed] = jsonpath.query(data, regularPath);
+    // console.log(path, regularPath, reffed);
 
     let result: boolean | ValidationError[] = true;
     if (reffed === undefined) {
@@ -134,7 +121,6 @@ const validator = (schema: JSONSchema, data: any): true | ValidationErrors => {
           const tokens = path.split(".");
           const key = tokens[tokens.length - 1];
           if (required.includes(key)) {
-            console.error(new Error("boom"));
             result = validateItem(ss, reffed);
           }
         }
@@ -145,10 +131,18 @@ const validator = (schema: JSONSchema, data: any): true | ValidationErrors => {
 
     if (result !== true) {
       errors = errors.concat(result);
+
+      if (errorMap[path] === undefined) {
+        errorMap[path] = result;
+      } else {
+        errorMap[path] = errorMap[path].concat(result);
+      }
     }
 
     return ss;
   });
+
+  // console.log(JSON.stringify(errorMap, null, '\t'));
 
   if (errors.length !== 0) {
     return new ValidationErrors(errors);
@@ -158,3 +152,7 @@ const validator = (schema: JSONSchema, data: any): true | ValidationErrors => {
 };
 
 export default validator;
+
+function ArrayValidator(schema: JSONSchemaObject, data: any) {
+  throw new Error("Function not implemented.");
+}
