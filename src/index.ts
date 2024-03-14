@@ -134,7 +134,6 @@ const validator = (schema: JSONSchema, data: any): true | ValidationErrors => {
           const tokens = path.split(".");
           const key = tokens[tokens.length - 1];
           if (required.includes(key)) {
-            console.error(new Error("boom"));
             result = validateItem(ss, reffed);
           }
         }
