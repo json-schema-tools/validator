@@ -124,7 +124,7 @@ const validator = (schema: JSONSchema, data: any): true | ValidationErrors => {
   traverse(schema, (ss, isCycle, path, parent: JSONSchema) => {
     const regularPath = schemaPathToRegularPath(path);
     let reffed = data;
-    if (typeof data === "object") {
+    if (data instanceof Object) {
       const [r] = jsonpath.query(data, regularPath);
       reffed = r;
     }
