@@ -4,7 +4,9 @@ import { ObjectValidationError } from "./base-validators/object";
 import { NumberValidationError } from "./base-validators/number";
 
 describe("validator", () => {
-  it("is a function", () => { expect(typeof validator).toBe("function"); });
+  it("is a function", () => {
+    expect(typeof validator).toBe("function");
+  });
 
   it("can handle mixed schema", () => {
     const testSchema = {
@@ -13,14 +15,14 @@ describe("validator", () => {
         foo: { type: "string", enum: ["abc", "xyz"] },
         bar: {
           type: "array",
-          items: { type: "number" }
-        }
-      }
+          items: { type: "number" },
+        },
+      },
     } as JSONSchema;
 
     const result = validator(testSchema, {
       foo: "abc",
-      bar: [123]
+      bar: [123],
     });
 
     expect(result).toBe(true);
@@ -33,14 +35,14 @@ describe("validator", () => {
         foo: { type: "string", enum: ["abc", "xyz"] },
         bar: {
           type: "array",
-          items: { type: "number" }
-        }
-      }
+          items: { type: "number" },
+        },
+      },
     } as JSONSchema;
 
     const result = validator(testSchema, {
       foo: "wrong",
-      bar: [123]
+      bar: [123],
     });
 
     expect(result).toBeInstanceOf(ValidationErrors);
@@ -54,14 +56,14 @@ describe("validator", () => {
         foo: { type: "string", enum: ["abc", "xyz"] },
         bar: {
           type: "array",
-          items: { type: "number" }
-        }
-      }
+          items: { type: "number" },
+        },
+      },
     } as JSONSchema;
 
     const result = validator(testSchema, {
       foo: "wrong",
-      bar: ["alsoWrong"]
+      bar: ["alsoWrong"],
     });
 
     expect(result).toBeInstanceOf(ValidationErrors);
@@ -74,12 +76,12 @@ describe("validator", () => {
       required: ["foo"],
       properties: {
         foo: { type: "string" },
-        bar: true
-      }
+        bar: true,
+      },
     } as JSONSchema;
 
     const result = validator(testSchema, {
-      bar: "anything"
+      bar: "anything",
     });
 
     expect(result).toBeInstanceOf(ValidationErrors);
@@ -91,12 +93,12 @@ describe("validator", () => {
       type: "object",
       properties: {
         foo: { type: "string" },
-        bar: true
-      }
+        bar: true,
+      },
     } as JSONSchema;
 
     const result = validator(testSchema, {
-      bar: "anything"
+      bar: "anything",
     });
 
     expect(result).toBe(true);
@@ -109,8 +111,8 @@ describe("validator", () => {
       properties: {
         foo: { type: "string" },
         bar: true,
-        baz: { type: "number" }
-      }
+        baz: { type: "number" },
+      },
     } as JSONSchema;
 
     const result = validator(testSchema, {
@@ -136,8 +138,8 @@ describe("validator", () => {
       properties: {
         foo: { type: "string" },
         bar: true,
-        baz: { type: "number" }
-      }
+        baz: { type: "number" },
+      },
     } as JSONSchema;
 
     const result = validator(testSchema, {
@@ -147,5 +149,35 @@ describe("validator", () => {
     expect(result).toBeInstanceOf(ValidationErrors);
     expect(result.errors[0]).toBeInstanceOf(NumberValidationError);
     expect(result.errors[1]).toBeInstanceOf(ObjectValidationError);
+  });
+  describe("handles paths correctly when passed simple types", () => {
+    it("handles paths correctly when passed a boolean", () => {
+      const testSchema = {
+        type: "boolean",
+      } as JSONSchema;
+
+      const result = validator(testSchema, true) as any;
+
+      expect(result).toBe(true);
+    });
+
+    it("handles paths correctly when passed a string", () => {
+      const testSchema = {
+        type: "string",
+      } as JSONSchema;
+
+      const result = validator(testSchema, "potato") as any;
+
+      expect(result).toBe(true);
+    });
+    it("handles paths correctly when passed a number", () => {
+      const testSchema = {
+        type: "number",
+      } as JSONSchema;
+
+      const result = validator(testSchema, 1) as any;
+
+      expect(result).toBe(true);
+    });
   });
 });
