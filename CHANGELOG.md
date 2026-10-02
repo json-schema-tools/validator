@@ -31,6 +31,17 @@
 
 * add object validation functionality without subschema checking ([aad19e8](https://github.com/json-schema-tools/validator/commit/aad19e8f553a97950be473b6b4ef110748d31503))
 
+## [1.4.1](https://github.com/json-schema-tools/validator/compare/1.4.0...1.4.1) (2026-10-02)
+
+
+### Bug Fixes
+
+* check for obj ([a91146c](https://github.com/json-schema-tools/validator/commit/a91146c709f2312644b8fdcd7e3dd2ec1e3ac5c1))
+* fix for simple type validation (boolean, string, number) + added tests ([53e5033](https://github.com/json-schema-tools/validator/commit/53e50339e2c87c62440ea18239d7b0f22c55cb58))
+* fix for simple type validation (boolean, string, number) + added tests ([edbd0a3](https://github.com/json-schema-tools/validator/commit/edbd0a334f9c04c716531df300d40b6069fbdf30))
+* remove boom error message ([0816067](https://github.com/json-schema-tools/validator/commit/0816067106f11c6a4bbc351600c4d15b858b819b))
+* remove boom error message ([cfdb170](https://github.com/json-schema-tools/validator/commit/cfdb17090cc0423d328642ce9cbb3815338392ba))
+
 ## [1.1.1](https://github.com/json-schema-tools/validator/compare/1.1.0...1.1.1) (2020-08-12)
 
 
