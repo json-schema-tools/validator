@@ -1,4 +1,4 @@
-import { JSONSchema, JSONSchemaObject } from "@json-schema-tools/meta-schema";
+import { JSONSchema } from "@json-schema-tools/meta-schema";
 import StringValidator, { StringValidationError } from "./base-validators/string";
 import BooleanValidator, { BooleanValidationError } from "./base-validators/boolean";
 import NumberValidator, { NumberValidationError } from "./base-validators/number";
@@ -121,7 +121,7 @@ const validator = (schema: JSONSchema, data: any): true | ValidationErrors => {
 
   let errors: ValidationError[] = [];
 
-  traverse(schema, (ss, isCycle, path, parent: JSONSchema) => {
+  traverse(schema, (ss, isCycle, path) => {
     const regularPath = schemaPathToRegularPath(path);
     let reffed = data;
     if (data instanceof Object) {
@@ -129,25 +129,11 @@ const validator = (schema: JSONSchema, data: any): true | ValidationErrors => {
       reffed = r;
     }
 
-    let result: boolean | ValidationError[] = true;
-    if (reffed === undefined) {
-      const p = parent as JSONSchemaObject;
-      if (p.type === "object") {
-        const required = p.required;
-        if (required) {
-          const tokens = path.split(".");
-          const key = tokens[tokens.length - 1];
-          if (required.includes(key)) {
-            result = validateItem(ss, reffed);
-          }
-        }
+    if (reffed !== undefined) {
+      const result = validateItem(ss, reffed);
+      if (result !== true) {
+        errors = errors.concat(result);
       }
-    } else {
-      result = validateItem(ss, reffed);
-    }
-
-    if (result !== true) {
-      errors = errors.concat(result);
     }
 
     return ss;
