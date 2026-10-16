@@ -1,6 +1,6 @@
 {
   "name": "@json-schema-tools/validator",
-  "version": "0.0.0-development",
+  "version": "1.4.1",
   "description": "JSON Schema validator. Simple, fast, handles circular references.",
   "main": "build/index.js",
   "bugs": {
