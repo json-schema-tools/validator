@@ -79,44 +79,73 @@ const validateItem = (schema: JSONSchema, data: any): true | ValidationError[] =
  *
  */
 const validator = (schema: JSONSchema, data: any): true | ValidationErrors => {
-  // $.properties.foo -> $.foo
-  // $.items[0].properties.foo -> $[0].foo
-  // $.properties.foo.items[0].properties.bar -> $.foo[0].bar
-  const schemaPathToRegularPath = (path: string) => {
-    const tokens = path.split(".");
-    const regularPath: string[] = [];
+  // Converts a traverse jsonpath (e.g. `$.properties["Some-Prop"].items[0]`)
+  // into a jsonpath over the data (e.g. `$["Some-Prop"][0]`).
+  // - `$.properties.foo` -> `$["foo"]`
+  // - `$.properties["Some-Prop"]` -> `$["Some-Prop"]`
+  // - `$.items[0].properties.foo` -> `$[0]["foo"]`
+  // - `$.properties.foo.items` (single schema) -> `$["foo"][*]`
+  const schemaPathToRegularPath = (path: string): string => {
+    // Tokenize the path without splitting inside ["quoted"] segments. Quoted
+    // names may contain dots, dashes, spaces, or escaped quotes (traverse >=
+    // 1.11 emits every non-identifier key this way).
+    const segments: (string | number)[] = [];
+    const tokenPattern = /\["((?:[^"\\]|\\.)*)"\]|\[(\d+)\]|\.([^.[\]]+)/g;
+    let match: RegExpExecArray | null;
+    const rest = path.slice(1); // strip the leading "$"; traverse paths are $-rooted
+    while ((match = tokenPattern.exec(rest)) !== null) {
+      if (match[1] !== undefined) {
+        // quoted property name; unescape (e.g. \" -> ")
+        segments.push(JSON.parse(`"${match[1]}"`));
+      } else if (match[2] !== undefined) {
+        segments.push(Number(match[2]));
+      } else {
+        segments.push(match[3]);
+      }
+    }
 
-    let pushNext = false;
-    tokens.forEach((t, i) => {
-      if (pushNext) {
-        regularPath.push(t);
-        pushNext = false;
-        return;
+    // jsonpath bracket-notation for a property name. The jsonpath lib does not
+    // process escapes inside "...", so names containing a double quote use '...'.
+    const bracketName = (name: string): string =>
+      name.includes('"') ? `['${name}']` : `[${JSON.stringify(name)}]`;
+
+    const regularPath: string[] = ["$"];
+    let expectPropName = false;
+    for (let i = 0; i < segments.length; i++) {
+      const seg = segments[i];
+
+      // the segment after "properties" is always a property name, even when
+      // the name itself is "properties" or "items"
+      if (expectPropName) {
+        // traverse only ever emits string keys after "properties"
+        regularPath.push(bracketName(seg as string));
+        expectPropName = false;
+        continue;
       }
 
-      if (t === "$") {
-        return regularPath.push(t);
+      if (seg === "properties") {
+        expectPropName = true;
+        continue;
       }
 
-      if (t.startsWith("items")) {
-        const l = regularPath.length - 1;
-        let toAppend = "";
-        if (t.includes("[") && t.includes("]")) {
-          toAppend = t.replace("items", "");
+      if (seg === "items") {
+        const next = segments[i + 1];
+        if (typeof next === "number") {
+          // tuple items: $.properties.foo.items[0] -> $["foo"][0]
+          regularPath[regularPath.length - 1] += `[${next}]`;
+          i++;
         } else {
-          toAppend = "[*]";
+          // single-schema items: $.properties.foo.items -> $["foo"][*]
+          regularPath[regularPath.length - 1] += "[*]";
         }
-
-        regularPath[l] += toAppend
-        return;
+        continue;
       }
 
-      if (t === "properties") {
-        pushNext = true;
-        return;
-      }
-    });
-    return regularPath.join(".");
+      // any other keyword (allOf[0], patternProperties, ...) has no data-path
+      // mapping; its subschema is validated against the enclosing data, as before
+    }
+
+    return regularPath.join("");
   };
 
   let errors: ValidationError[] = [];
