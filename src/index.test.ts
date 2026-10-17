@@ -2,6 +2,8 @@ import validator, { ValidationErrors } from "./";
 import { JSONSchema } from "@json-schema-tools/meta-schema";
 import { ObjectValidationError } from "./base-validators/object";
 import { NumberValidationError } from "./base-validators/number";
+import { StringValidationError } from "./base-validators/string";
+import { OneOfValidationError } from "./base-validators/oneOf";
 
 describe("validator", () => {
   it("is a function", () => {
@@ -178,6 +180,84 @@ describe("validator", () => {
       const result = validator(testSchema, 1) as any;
 
       expect(result).toBe(true);
+    });
+  });
+
+  describe("oneOf", () => {
+    it("validates when data matches exactly one branch", () => {
+      expect(validator({ oneOf: [{ type: "string" }, { type: "number" }] } as any, "potato")).toBe(true);
+    });
+
+    it("validates when data matches exactly one branch including null", () => {
+      expect(validator({ oneOf: [{ type: "string" }, { type: "null" }] } as any, null)).toBe(true);
+    });
+
+    it("errors when data matches more than one branch", () => {
+      const result = validator({ oneOf: [{ type: "string" }, {}] } as any, "potato") as any;
+
+      expect(result).toBeInstanceOf(ValidationErrors);
+      expect(result.errors.length).toBe(1);
+      expect(result.errors[0]).toBeInstanceOf(OneOfValidationError);
+      expect(result.errors[0].message).toContain("but 2 matched");
+    });
+
+    it("errors when data matches no branches", () => {
+      const result = validator({ oneOf: [{ type: "string" }, { type: "number" }] } as any, true) as any;
+
+      expect(result).toBeInstanceOf(ValidationErrors);
+      expect(result.errors.length).toBe(1);
+      expect(result.errors[0]).toBeInstanceOf(OneOfValidationError);
+      expect(result.errors[0].message).toContain("but 0 matched");
+    });
+
+    it("supports oneOf nested inside an object property", () => {
+      const testSchema = {
+        type: "object",
+        properties: {
+          foo: { oneOf: [{ type: "string" }, { type: "number" }] },
+        },
+      } as JSONSchema;
+
+      expect(validator(testSchema, { foo: "potato" })).toBe(true);
+
+      const result = validator(testSchema, { foo: true }) as any;
+      expect(result).toBeInstanceOf(ValidationErrors);
+      expect(result.errors[0]).toBeInstanceOf(OneOfValidationError);
+    });
+
+    it("supports oneOf nested inside a oneOf branch", () => {
+      const testSchema = {
+        oneOf: [
+          { oneOf: [{ type: "string" }, { type: "integer" }] },
+          { type: "array" },
+        ],
+      } as JSONSchema;
+
+      expect(validator(testSchema, "potato")).toBe(true);
+      expect(validator(testSchema, [1, 2])).toBe(true);
+
+      const result = validator(testSchema, 1.5) as any;
+      expect(result).toBeInstanceOf(ValidationErrors);
+      expect(result.errors[0]).toBeInstanceOf(OneOfValidationError);
+    });
+
+    it("still validates a data property literally named oneOf", () => {
+      const testSchema = {
+        oneOf: [{ type: "string" }, { type: "number" }],
+        properties: {
+          oneOf: { type: "string" },
+        },
+      } as JSONSchema;
+
+      // the real oneOf is satisfied and the property named "oneOf" is a string
+      expect(validator(testSchema, "potato")).toBe(true);
+
+      // the property literally named "oneOf" is validated (not skipped as a branch)
+      const result = validator(testSchema, true) as any;
+      expect(result).toBeInstanceOf(ValidationErrors);
+      expect(result.errors.length).toBe(2);
+      expect(result.errors[0]).toBeInstanceOf(StringValidationError);
+      expect(result.errors[1]).toBeInstanceOf(OneOfValidationError);
     });
   });
 });

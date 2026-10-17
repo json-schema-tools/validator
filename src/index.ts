@@ -5,6 +5,7 @@ import NumberValidator, { NumberValidationError } from "./base-validators/number
 import IntegerValidator, { IntegerValidationError } from "./base-validators/integer";
 import ObjectValidator, { ObjectValidationError } from "./base-validators/object";
 import ArrayValidator, { ArrayValidationError } from "./base-validators/array";
+import { OneOfValidationError } from "./base-validators/oneOf";
 
 import traverse from "@json-schema-tools/traverse";
 import jsonpath from "jsonpath";
@@ -16,7 +17,8 @@ type ValidationError =
   IntegerValidationError |
   NumberValidationError |
   ObjectValidationError |
-  ArrayValidationError;
+  ArrayValidationError |
+  OneOfValidationError;
 
 export class ValidationErrors implements Error {
   public name = "ValidationErrors";
@@ -59,6 +61,20 @@ const validateItem = (schema: JSONSchema, data: any): true | ValidationError[] =
     const valid = ArrayValidator(schema, data);
     if (valid !== true) {
       errors.push(valid);
+    }
+  }
+
+  if (typeof schema !== "boolean" && schema.oneOf !== undefined) {
+    const matched = schema.oneOf
+      .filter((subschema) => validateItem(subschema, data) === true)
+      .length;
+
+    if (matched !== 1) {
+      errors.push(new OneOfValidationError(
+        schema,
+        data,
+        `expected data to match exactly one schema in oneOf, but ${matched} matched`,
+      ));
     }
   }
 
@@ -122,6 +138,15 @@ const validator = (schema: JSONSchema, data: any): true | ValidationErrors => {
   let errors: ValidationError[] = [];
 
   traverse(schema, (ss, isCycle, path) => {
+    // Subschemas beneath a oneOf keyword (e.g. `$.oneOf[0]`, `$.properties.foo.oneOf[1]`)
+    // are validated recursively by validateItem at the oneOf schema itself. Validating
+    // them here would check each branch against the parent schema's data, producing
+    // false errors. A data property literally named "oneOf" (e.g. `$.properties.oneOf`)
+    // carries no bracket index, so it is still validated here.
+    if (/(^|\.)oneOf\[\d+\]/.test(path)) {
+      return ss;
+    }
+
     const regularPath = schemaPathToRegularPath(path);
     let reffed = data;
     if (data instanceof Object) {
